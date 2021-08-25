@@ -1,5 +1,7 @@
 package br.com.globalLabs.SpringMVCRest.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,11 +13,13 @@ import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "jedi")
-public class Jedi {
+public class Jedi implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name = "id_jedi")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@Size(min = 3, max = 10, message = "Nome deve conter entre 3 e 10 caracteres")
@@ -27,7 +31,7 @@ public class Jedi {
 	@Column(name = "last_name")
 	private String lastName;
 
-	public Jedi(final String name, final String lastname) {
+	public Jedi(String name, String lastname) {
 		this.name = name;
 		this.lastName = lastname;
 	}
