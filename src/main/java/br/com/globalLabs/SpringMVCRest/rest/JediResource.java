@@ -1,7 +1,6 @@
 package br.com.globalLabs.SpringMVCRest.rest;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -18,66 +17,48 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.globalLabs.SpringMVCRest.model.Jedi;
-import br.com.globalLabs.SpringMVCRest.repository.JediRepository;
+import br.com.globalLabs.SpringMVCRest.service.JediService;
 
 @RestController
 public class JediResource {
 
 	@Autowired
-	private JediRepository repository;
+	private JediService service;
 
 	@GetMapping("/api/jedi")
 	public List<Jedi> getAllJedi() {
 
-		return repository.findAll();
+		return service.findAll();
 	}
 
 	@GetMapping("/api/jedi/{id}")
 	public ResponseEntity<Jedi> getJedi(@PathVariable("id") Long id) {
-		Optional<Jedi> jedi = repository.findById(id);
+		Jedi jedi = service.findById(id);
 
-		if (jedi.isPresent()) {
-			return ResponseEntity.ok(jedi.get());
-		} else {
-			return ResponseEntity.notFound().build();
-		}
+		return ResponseEntity.ok(jedi);
 
 	}
 
 	@PostMapping("api/jedi")
 	@ResponseStatus(HttpStatus.CREATED)
 	public Jedi createJedi(@Valid @RequestBody Jedi jedi) {
-		return repository.save(jedi);
+		return service.save(jedi);
 	}
 
 	@PutMapping("api/jedi/{id}")
 	public ResponseEntity<Jedi> updateJedi(@PathVariable("id") Long id, @Valid @RequestBody Jedi dto) {
 
-		Optional<Jedi> jediEntity = repository.findById(id);
-		final Jedi jedi;
-		if (jediEntity.isPresent()) {
-			jedi = jediEntity.get();
-		} else {
-			return ResponseEntity.notFound().build();
-		}
+		final Jedi jedi = service.update(id, dto);
 
-		jedi.setName(dto.getName());
-		jedi.setLastName(dto.getLastName());
+		return ResponseEntity.ok(jedi);
 
-		return ResponseEntity.ok(repository.save(jedi));
 	}
 
-	@SuppressWarnings("rawtypes")
 	@DeleteMapping("api/jedi/{id}")
-	public ResponseEntity deleteJedi(@PathVariable("id") Long id) {
-		final Optional<Jedi> jedi = repository.findById(id);
-		
-		if(jedi.isPresent()) {
-			repository.delete(jedi.get());
-			return ResponseEntity.noContent().build();
-		}else {
-			return ResponseEntity.notFound().build();
-		}
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void deleteJedi(@PathVariable("id") Long id) {
+		service.delete(id);
+
 	}
 
 }
